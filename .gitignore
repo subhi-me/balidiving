@@ -1,0 +1,7 @@
+node_modules/
+node.js/node_modules/
+*.zip
+*.tar.gz
+*.log
+en/error_log
+node.js/.env

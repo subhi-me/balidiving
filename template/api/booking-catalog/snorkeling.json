@@ -1,0 +1,17 @@
+{
+  "padang_bai": {
+    "title": "Snorkeling – Padang Bai",
+    "location": "Padang Bai",
+    "duration": "7 hours",
+    "level": "Beginner",
+    "dives": "",
+    "highlights": [
+      "Calm bay",
+      "Colorful shallow reef",
+      "Beginner friendly"
+    ],
+    "image: "https://balidiving.com/images/thumbnails/3-bali-diving-underwater.jpg",
+    "usd": 1,
+    "discount_pct": 0
+  }
+}

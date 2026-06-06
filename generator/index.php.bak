@@ -1,0 +1,482 @@
+<?php
+/**
+ * generator.php
+ * Multi-File PHP Generator (English content) — by Subhi.me
+ *
+ * What it does:
+ * - Input keywords (one per line) -> creates <slug>.php per keyword
+ * - Public links: forced HTTPS + pretty URL (no ".php")
+ * - Sections:
+ *   1) Hero (high contrast, readable)
+ *   2) SEO Article (prose-invert + palette)
+ *   3) Related (max 4, Instagram-like thumbnails)
+ * - JSON-LD: Article + FAQ
+ * - Auto index.php (catalog)
+ * - ✅ Auto-generate sitemap.xml (absolute HTTPS, no ".php")
+ *
+ * Requirements:
+ * - Tailwind + Font Awesome already included in ../template/start.php
+ * - (Optional) .htaccess for pretty URLs (see previous message)
+ */
+
+mb_internal_encoding("UTF-8");
+
+// ================== SETTINGS ==================
+$OUTPUT_DIR_DEFAULT = __DIR__; // where .php files will be written
+$SITE_NAME          = "Bali Diving";
+$AUTHOR_NAME        = "Bali Diving Team";
+
+// ✅ Force HTTPS & Public base URL (no trailing slash)
+$PUBLIC_BASE_URL    = "https://www.balidiving.com/recommendations";
+
+// Leave empty to let canonical use PUBLIC_BASE_URL (https + no .php)
+$BASE_URL_HINT      = "";
+
+// Where to write sitemap.xml (use domain root if you prefer)
+$SITEMAP_PATH       = $OUTPUT_DIR_DEFAULT . DIRECTORY_SEPARATOR . "sitemap.xml";
+
+// Thumbnail pool for the related grid
+$THUMBS = [
+  "https://www.balidiving.com/images/thumbnails/10-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/11-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/12-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/13-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/2-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/3-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/4-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/5-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/6-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/7-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/8-bali-diving-underwater.jpg",
+  "https://www.balidiving.com/images/thumbnails/9-bali-diving-underwater.jpg",
+];
+
+// ================== HELPERS ==================
+function slugify($text) {
+  $text = strtolower(trim($text));
+  $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+  $trans = @iconv('UTF-8', 'ASCII//TRANSLIT', $text);
+  if ($trans !== false) $text = $trans;
+  $text = preg_replace('~[^-\w]+~', '', $text);
+  $text = trim($text, '-');
+  $text = preg_replace('~-+~', '-', $text);
+  return $text ?: 'page';
+}
+function esc($s) { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
+
+function metaDescription($kw) {
+  return "Discover {$kw} in Bali: sites, conditions, safety tips, pricing insights, and how to plan an unforgettable underwater experience with {$kw}.";
+}
+function h1Line($kw) { return "Experience " . $kw . " in Bali"; }
+function subheading($kw) { return "Plan, dive, and thrive with practical tips for " . $kw . " enthusiasts."; }
+function paragraph($kw) {
+  return "Thinking about {$kw} in Bali? This guide covers real-world conditions, how to choose sites by skill level, safety protocols, seasonality, and the must-know logistics to maximize your underwater time. We keep it practical, concise, and field-tested.";
+}
+function bullets($kw) {
+  return [
+    "Best months for {$kw} and what to expect underwater.",
+    "Entry requirements, depth profiles, and current awareness.",
+    "Equipment checklist tailored for {$kw} scenarios.",
+    "Local etiquette, conservation practices, and reef-safe habits.",
+    "Budgeting tips: where to save vs. where to invest."
+  ];
+}
+function faqPairs($kw) {
+  return [
+    ["Is {$kw} suitable for beginners?",
+     "Yes, with proper guidance and site selection. We match conditions and depth to your experience and maintain conservative safety margins."],
+    ["What’s the ideal season for {$kw} in Bali?",
+     "Generally April–November offers calmer seas, but micro-conditions vary by site. Always check the latest local forecast and briefings."],
+    ["How much does {$kw} typically cost?",
+     "Costs vary by site access, boat charter, gear rental, and guiding. Transparent pricing helps plan ahead—ask for itemized quotes."],
+    ["Do I need special gear for {$kw}?",
+     "A streamlined setup usually works. Add reef-safe sunscreen, surface signaling devices, and a computer with conservative ascent profiles."],
+    ["Can I combine {$kw} with a certification course?",
+     "Absolutely. Many divers bundle guided dives with skill upgrades to accelerate learning while exploring Bali’s signature spots."]
+  ];
+}
+function jsonLdArticle($title, $desc, $url, $author) {
+  $now = date('c');
+  $data = [
+    "@context" => "https://schema.org",
+    "@type" => "Article",
+    "headline" => $title,
+    "description" => $desc,
+    "author" => ["@type" => "Organization", "name" => $author],
+    "datePublished" => $now,
+    "dateModified"  => $now,
+    "mainEntityOfPage" => ["@type" => "WebPage", "@id" => $url ?: ""],
+  ];
+  return '<script type="application/ld+json">'.json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE).'</script>';
+}
+function jsonLdFAQ($pairs) {
+  $items = [];
+  foreach ($pairs as $p) {
+    $items[] = [
+      "@type" => "Question",
+      "name"  => $p[0],
+      "acceptedAnswer" => ["@type" => "Answer", "text" => $p[1]]
+    ];
+  }
+  $data = ["@context" => "https://schema.org", "@type" => "FAQPage", "mainEntity" => $items];
+  return '<script type="application/ld+json">'.json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE).'</script>';
+}
+
+// Build "Related Articles" grid (max 4) using public pretty URLs (https, no .php)
+function buildRelatedGrid($allPages, $currentSlug, $thumbs, $limit = 4) {
+  $cards = [];
+  $i = 0;
+  foreach ($allPages as $p) {
+    if ($p['slug'] === $currentSlug) continue;
+    $thumb = $thumbs[$i % count($thumbs)];
+    // Card: kontras + palette
+    $cards[] = '
+      <a href="'.esc($p['url']).'" class="group relative overflow-hidden rounded-xl shadow hover:shadow-2xl transition block bg-white/5 border border-white/10">
+        <img src="'.esc($thumb).'" alt="'.esc($p['title']).'" class="w-full h-44 object-cover group-hover:scale-105 transition">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+        <div class="absolute bottom-0 p-3">
+          <h3 class="text-white text-sm font-semibold group-hover:text-lightblue">'.esc($p['title']).'</h3>
+        </div>
+      </a>';
+    $i++;
+    if ($i >= $limit) break;
+  }
+  if (empty($cards)) {
+    return '<p class="text-white/70">More articles coming soon.</p>';
+  }
+  // Render grid up to 4
+  $html = '<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">';
+  for ($j = 0; $j < min(4, count($cards)); $j++) $html .= $cards[$j];
+  $html .= '</div>';
+  return $html;
+}
+
+// Build one page content (high-contrast wrappers)
+function buildFileContent($kw, $siteName, $authorName, $baseUrlHint, $thisPage, $allPages, $thumbs) {
+  $slug   = $thisPage['slug'];
+  $title  = $siteName . " | " . ucwords($kw);
+  $h1     = h1Line($kw);
+  $sub    = subheading($kw);
+  $desc   = metaDescription($kw);
+  $para   = paragraph($kw);
+  $bul    = bullets($kw);
+  $faqs   = faqPairs($kw);
+
+  // Canonical: prefer baseUrlHint if given, otherwise use public pretty URL (https, no .php)
+  $canonical = $baseUrlHint
+    ? rtrim($baseUrlHint, "/")."/".$slug
+    : ($thisPage['url'] ?? "");
+
+  // FAQ accordion
+  $faqHtml = '';
+  foreach ($faqs as $f) {
+    $q = esc($f[0]);
+    $a = esc($f[1]);
+    $faqHtml .= '
+      <div class="border border-white/10 rounded-xl p-4 bg-white/5">
+        <button class="w-full flex items-center justify-between text-left" onclick="this.nextElementSibling.classList.toggle(\'hidden\')">
+          <span class="font-semibold">'.$q.'</span>
+          <i class="fa-solid fa-chevron-down text-sm"></i>
+        </button>
+        <div class="hidden mt-3 text-white/80">'.$a.'</div>
+      </div>';
+  }
+
+  $relatedGrid = buildRelatedGrid($allPages, $slug, $thumbs, 4);
+
+  ob_start();
+  ?>
+<?php echo "<?php include('../template/start.php'); ?>\n"; ?>
+<!-- ===================== Structured Metadata ===================== -->
+<title><?= esc($title) ?></title>
+<meta name="description" content="<?= esc($desc) ?>">
+<?php if ($canonical): ?>
+<link rel="canonical" href="<?= esc($canonical) ?>">
+<?php endif; ?>
+<?= jsonLdArticle($title, $desc, $canonical, $authorName) . "\n" ?>
+<?= jsonLdFAQ($faqs) . "\n" ?>
+
+<!-- ===== Page Wrapper to guarantee contrast even if global theme is light ===== -->
+<div class="min-h-screen bg-[#0b1220] text-white">
+  <!-- ===================== Section 1: Hero ===================== -->
+  <section class="relative min-h-[60vh] w-full flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-navy to-black/70"></div>
+    <div class="relative z-10 max-w-5xl mx-auto px-6 py-16 text-center">
+      <div class="inline-flex items-center gap-2 text-white/80 mb-3">
+        <i class="fa-solid fa-water"></i>
+        <span class="uppercase tracking-widest text-xs">Bali • Underwater</span>
+      </div>
+      <h1 class="text-4xl md:text-6xl font-bold mb-4 text-white"><?= esc($h1) ?></h1>
+      <p class="text-white/80 md:text-lg max-w-3xl mx-auto"><?= esc($sub) ?></p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#guide" class="px-6 py-3 rounded-xl bg-accent hover:bg-primary transition inline-flex items-center justify-center gap-2">
+          <i class="fa-solid fa-compass"></i><span>Start the Guide</span>
+        </a>
+        <a href="#faq" class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center gap-2">
+          <i class="fa-solid fa-circle-question"></i><span>Quick FAQs</span>
+        </a>
+      </div>
+    </div>
+    <div class="absolute -bottom-24 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent"></div>
+  </section>
+
+  <!-- ===================== Section 2: SEO Article ===================== -->
+  <section id="guide" class="relative w-full">
+    <div class="max-w-5xl mx-auto px-6 py-12">
+      <header class="mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold mb-2 text-lightblue"><?= esc(ucwords($kw)) ?> — Field Guide</h2>
+        <p class="text-white/80"><?= esc($desc) ?></p>
+      </header>
+
+      <article class="prose prose-invert max-w-none">
+        <p><?= esc($para) ?></p>
+
+        <h3 class="text-gold">Key Takeaways</h3>
+        <ul class="marker:text-gold">
+          <?php foreach ($bul as $b): ?>
+            <li><?= esc($b) ?></li>
+          <?php endforeach; ?>
+        </ul>
+
+        <h3 class="text-lightblue">Choosing Sites by Objective</h3>
+        <p>Match your goal to site characteristics: entry/exit, current maps, visibility ranges, and known marine life. For training objectives, keep profiles conservative, build repetition, and debrief every dive.</p>
+
+        <h3 class="text-accent" id="faq">FAQs</h3>
+        <div class="space-y-3">
+          <?= $faqHtml ?>
+        </div>
+      </article>
+
+      <div class="mt-8 p-4 rounded-xl bg-white/5 border border-white/10 text-sm text-white/80">
+        <i class="fa-solid fa-triangle-exclamation mr-2 text-gold"></i>
+        Information is guidance only. Conditions change quickly—always follow your professional guide’s briefing and local regulations.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Section 3: Related Links (max 4) ===================== -->
+  <section class="relative w-full bg-navy/60">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl md:text-2xl font-bold text-lightblue">Related Articles</h2>
+        <a href="./" class="text-gold hover:text-white transition text-sm inline-flex items-center gap-2">
+          <i class="fa-solid fa-list"></i> View All
+        </a>
+      </div>
+      <?= $relatedGrid ?>
+    </div>
+  </section>
+</div>
+
+<?php echo "<?php include('../template/end.php'); ?>\n"; ?>
+<?php
+  return trim(ob_get_clean());
+}
+
+// ================== SITEMAP BUILDER ==================
+function generateSitemapXML($pages, $sitemapPath) {
+  // Build XML for urls (absolute https in $p['url'])
+  $now = date('c');
+  $xml = [];
+  $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
+  $xml[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+  foreach ($pages as $p) {
+    $loc = $p['url']; // already https + no .php
+    $xml[] = '  <url>';
+    $xml[] = '    <loc>'.htmlspecialchars($loc, ENT_QUOTES, 'UTF-8').'</loc>';
+    $xml[] = '    <lastmod>'.$now.'</lastmod>';
+    $xml[] = '    <changefreq>weekly</changefreq>';
+    $xml[] = '    <priority>0.80</priority>';
+    $xml[] = '  </url>';
+  }
+  $xml[] = '</urlset>';
+  $content = implode("\n", $xml);
+  if (file_put_contents($sitemapPath, $content) === false) {
+    return "Failed to write sitemap: " . esc($sitemapPath);
+  }
+  return null; // no error
+}
+
+// ================== HANDLE REQUEST ==================
+$errors = [];
+$messages = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $raw       = trim($_POST['keywords'] ?? '');
+  $outDir    = trim($_POST['outdir'] ?? '');
+  $overwrite = isset($_POST['overwrite']);
+
+  if ($raw === '') $errors[] = "Please provide at least one keyword (one per line).";
+
+  $targetDir = $outDir !== '' ? rtrim($outDir, '/\\') : $GLOBALS['OUTPUT_DIR_DEFAULT'];
+  if (!is_dir($targetDir)) {
+    if (!mkdir($targetDir, 0775, true)) $errors[] = "Cannot create output directory: " . esc($targetDir);
+  }
+  if (!is_writable($targetDir)) $errors[] = "Output directory is not writable: " . esc($targetDir);
+
+  if (!$errors) {
+    // Normalize keywords
+    $lines = array_filter(array_map('trim', preg_split('/\R+/', $raw)));
+    $lines = array_values(array_unique($lines));
+
+    // Build page map (filesystem + public pretty URL without .php)
+    $pages = [];
+    foreach ($lines as $k) {
+      $slug     = slugify($k);
+      $filename = $targetDir . DIRECTORY_SEPARATOR . $slug . '.php'; // filesystem
+      $url      = rtrim($PUBLIC_BASE_URL, '/').'/'.$slug;            // https + no .php
+      $pages[]  = [
+        'keyword'  => $k,
+        'slug'     => $slug,
+        'filename' => $filename,
+        'url'      => $url,
+        'title'    => ucwords($k),
+      ];
+    }
+
+    // Generate each page
+    $created = 0; $skipped = 0; $overwrote = 0;
+    foreach ($pages as $p) {
+      $content = buildFileContent($p['keyword'], $SITE_NAME, $AUTHOR_NAME, $BASE_URL_HINT, $p, $pages, $THUMBS);
+
+      if (file_exists($p['filename']) && !$overwrite) {
+        $skipped++;
+        $messages[] = "Skipped (exists): ".basename($p['filename']);
+        continue;
+      }
+      if (file_put_contents($p['filename'], $content) === false) {
+        $errors[] = "Failed to write: ".esc($p['filename']);
+      } else {
+        if ($overwrite && file_exists($p['filename'])) $overwrote++;
+        else $created++;
+        $messages[] = "Generated: ".basename($p['filename']);
+      }
+    }
+
+    // Build/refresh index.php (links use pretty https URLs)
+    $indexPath = $targetDir . DIRECTORY_SEPARATOR . 'index.php';
+    if (!file_exists($indexPath) || $overwrite) {
+      $listItems = "";
+      $i = 0;
+      foreach ($pages as $p) {
+        $thumb = $THUMBS[$i % count($THUMBS)];
+        $listItems .= '
+        <a href="'.esc($p['url']).'" class="group block rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <div class="flex gap-4 items-center">
+            <img src="'.esc($thumb).'" class="w-28 h-20 object-cover" alt="'.esc($p['title']).'">
+            <div class="p-3">
+              <h3 class="text-white font-semibold group-hover:text-lightblue">'.esc($p['title']).'</h3>
+              <p class="text-white/70 text-sm">'.esc(metaDescription($p['keyword'])).'</p>
+            </div>
+          </div>
+        </a>';
+        $i++;
+      }
+      $idx = "<?php include('../template/start.php'); ?>\n".
+      '<div class="min-h-screen bg-[#0b1220] text-white">'.
+      '<section class="min-h-[60vh]"><div class="max-w-5xl mx-auto px-6 py-12">'.
+      '<h1 class="text-3xl font-bold mb-6 text-lightblue">Generated Articles</h1>'.
+      '<div class="grid md:grid-cols-2 gap-4">'.$listItems.'</div>'.
+      '</div></section>'.
+      '</div>'."\n".
+      "<?php include('../template/end.php'); ?>\n";
+      @file_put_contents($indexPath, $idx);
+    }
+
+    // ✅ Generate sitemap.xml (absolute https + pretty URLs)
+    $sitemapError = generateSitemapXML($pages, $SITEMAP_PATH);
+    if ($sitemapError) $errors[] = $sitemapError;
+    else $messages[] = "Sitemap generated: ".esc($SITEMAP_PATH);
+
+    if (!$errors) {
+      $messages[] = "Done. Created: {$created}, Overwrote: {$overwrote}, Skipped: {$skipped}.";
+    }
+  }
+}
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Multi File PHP Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Admin form styling only (generated pages rely on ../template/start.php) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Mirror your Tailwind palette for admin form look & feel
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3552c8',
+            secondary: '#f23d4e',
+            accent: '#0070d3',
+            teal: '#23a0b4',
+            gold: '#eebe35',
+            lightblue: '#a2d2fa',
+            navy: '#063c7f'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#0b1220] text-white">
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-2 text-lightblue">Multi File PHP Generator</h1>
+    <p class="text-white/70 mb-6">Enter keywords (one per line). The generator creates a high-contrast page for each keyword, plus a sitemap.xml.</p>
+
+    <?php if (!empty($errors)): ?>
+      <div class="mb-4 rounded-xl border border-secondary bg-secondary/10 p-4">
+        <div class="font-semibold mb-2"><i class="fa-solid fa-circle-exclamation mr-2 text-secondary"></i>Errors</div>
+        <ul class="list-disc ml-5">
+          <?php foreach ($errors as $e): ?><li><?= $e ?></li><?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+
+    <?php if (!empty($messages)): ?>
+      <div class="mb-4 rounded-xl border border-teal bg-teal/10 p-4">
+        <div class="font-semibold mb-2"><i class="fa-solid fa-circle-check mr-2 text-teal"></i>Results</div>
+        <ul class="list-disc ml-5">
+          <?php foreach ($messages as $m): ?><li><?= esc($m) ?></li><?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+
+    <form method="post" class="space-y-4">
+      <div>
+        <label class="block text-sm mb-1">Keywords (one per line)</label>
+        <textarea name="keywords" rows="10" class="w-full rounded-lg bg-white/5 border border-white/10 p-3" placeholder="e.g.
+Tulamben wreck diving
+Nusa Penida manta dive
+Amed macro photography
+Bali scuba refresher
+Open Water Course Bali"><?= isset($_POST['keywords'])? esc($_POST['keywords']) : '' ?></textarea>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm mb-1">Output Directory (optional)</label>
+          <input type="text" name="outdir" class="w-full rounded-lg bg-white/5 border border-white/10 p-3" placeholder="<?= esc($OUTPUT_DIR_DEFAULT) ?>" value="<?= isset($_POST['outdir'])? esc($_POST['outdir']) : '' ?>">
+        </div>
+        <div class="flex items-end">
+          <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="overwrite" class="accent-accent">
+            <span>Overwrite existing files</span>
+          </label>
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="w-full px-6 py-3 rounded-xl bg-accent hover:bg-primary transition inline-flex items-center justify-center gap-2">
+            <i class="fa-solid fa-bolt"></i><span>Generate</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-xs text-white/50">
+        Tip: Re-run with the same keywords to refresh internal linking and sitemap.xml.
+      </div>
+    </form>
+  </div>
+</body>
+</html>

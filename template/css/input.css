@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles kamu di bawah */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'Sui Generis';
+  src: url('/fonts/sui-generis.woff2') format('woff2'),
+       url('/fonts/sui-generis.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Tambahkan seluruh CSS kustom kamu (hero, wave, chat launcher, dsb) di bawah ini */

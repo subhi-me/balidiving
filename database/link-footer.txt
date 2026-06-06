@@ -1,0 +1,12 @@
+Home;#top?scuba-bali
+Packages;#package
+Pricelist;scuba-diving-cost-pricelist
+Snorkeling;snorkeling
+Try Diving;try-scuba-diving
+Diving Tours;discover-scuba-diving-in-bali
+Go Scuba Diving;https://www.balidiving.com/diving-safaris
+Diving Certification;https://www.balidiving.com/scuba-diving-certification
+Blog and News;https://www.balidiving.com/#features2-5u
+Food Menu;food-menu
+Promotions;https://booking.balidiving.com/invite/
+Download;download-center

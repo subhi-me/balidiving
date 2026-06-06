@@ -1,0 +1,7 @@
+2025-10-11 23:11:11 | Subhi Darajat | work.with@subhi.me | BD-25793
+2025-10-11 23:20:08 | USER: Subhi Darajat <work.with@subhi.me> | WA:  | CODE: BD-34329
+2025-10-11 23:20:38 | USER: Subhi Darajat <work.with@subhi.me> | WA:  | CODE: BD-02127
+2025-10-11 23:24:29 | USER: Subhi Darajat <work.with@subhi.me> | WA: 628123456789 | CODE: BD-47761 | GIFT-> Euis Susilawati <euis@mail.com> | WA: 628987654321
+2025-10-12 16:39:13 | USER: John Doe <john@email.com> | WA:  | CODE: BD-28924
+2025-10-12 19:30:57 | USER: Subhi Darajat <work.with@subhi.me> | WA:  | CODE: BD-29534
+2025-10-13 11:23:49 | USER: Subhi Darajat <work.with@subhi.me> | WA:  | CODE: BD-85728

@@ -1,0 +1,243 @@
+<section class="cid-rDIoRHuNBt" id="info3-a">
+    <div class="container">
+        <div class="media-container-row content mbr-white">
+            <div class="col-12 col-md-3 mbr-fonts-style display-4">
+                <p class="mbr-text"><strong>Find Us</strong><br>BALI DIVING
+<br>Jl. By Pass Ngurah Rai No. 46E Sanur Kauh, South Denpasar, DPS Bali, Indonesia<br><br><strong>Office Phone:
+</strong><br>+62 361 2707 91
+<br><strong>Whatsapp:
+</strong><br>+62 878 6119 0174<br>EMAIL<br><strong>Enquire and Booking:
+</strong><br>sales@balidiving.com <br><strong>Information :
+</strong><br>customer.service@balidiving.com<br></p>
+            </div>
+<?php include 'elements/footer-links.php'; ?>
+<div class="col-12 col-md-6">
+<div class="google-map"><iframe frameborder="0" style="border:0" src="https://maphub.net/embed/63416?button=0" allowfullscreen=""></iframe></div>
+</div>
+</div>
+<div class="footer-lower">
+<div class="media-container-row">
+<div class="col-sm-12">
+<hr>
+    </div>
+</div>
+    
+    </div>
+</section>
+
+<section once="footers" class="cid-rqwoBIN68a" id="footer6-a">
+    <div class="container">
+        <div class="media-container-row align-center mbr-white">
+            <div class="col-12">
+                <p class="mbr-text mb-0 mbr-fonts-style display-4"><br><p>&copy; <script>document.write(new Date().getFullYear())</script> Bali Diving. All rights reserved.</p><br><br>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <div class="footer-column footer-info">
+            <h3>Hubungi Kami</h3>
+            <address>
+                <p><i class="fas fa-map-marker-alt"></i> Jl. By Pass Ngurah Rai No. 46E, Sanur Kauh, Denpasar</p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+62361270791">+62 361 2707 91</a></p>
+                <p><i class="fab fa-whatsapp"></i> <a href="https://wa.me/6287861190174" target="_blank">+62 878 6119 0174</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:sales@balidiving.com">sales@balidiving.com</a></p>
+            </address>
+        </div>
+
+        <div class="footer-column footer-links">
+            <h3>Navigasi</h3>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Packages</a></li>
+                <li><a href="#">Pricelist</a></li>
+                <li><a href="#">Snorkeling</a></li>
+                <li><a href="#">Diving Tours</a></li>
+                <li><a href="#">Promotions</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column footer-map">
+            <h3>Lokasi Kami</h3>
+            <div class="map-wrapper">
+                <iframe 
+                    src="https://maphub.net/embed_h/wCQZ8aBFuFN4gHfh?panel=1" 
+                    frameborder="0" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="social-icons">
+            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+        <p>&copy; 2025 Bali Diving. All rights reserved.</p>
+    </div>
+</footer>
+<style>
+    /* --- FOOTER STYLING --- */
+
+/* Mengatur font utama dan warna dasar footer */
+.site-footer {
+    background-color: #1a1a1a; /* Warna hitam yang lebih lembut */
+    color: #a9a9a9; /* Warna abu-abu untuk teks agar tidak terlalu kontras */
+    font-family: 'Poppins', sans-serif;
+    padding: 50px 0;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* Container utama untuk kolom */
+.footer-container {
+    display: flex;
+    flex-wrap: wrap; /* Agar kolom turun ke bawah di layar kecil */
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Pengaturan umum untuk setiap kolom */
+.footer-column {
+    flex: 1; /* Membuat setiap kolom fleksibel */
+    min-width: 280px; /* Lebar minimum sebelum kolom turun */
+    padding: 0 15px;
+    margin-bottom: 30px;
+}
+
+/* Styling untuk judul kolom */
+.footer-column h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #FFFF00; /* Warna kuning sebagai aksen */
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+/* Garis bawah dekoratif untuk judul */
+.footer-column h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 40px;
+    height: 2px;
+    background-color: #FFFF00;
+}
+
+/* Menghilangkan margin default dari tag <address> */
+.footer-column address {
+    font-style: normal;
+}
+
+/* Styling untuk link di footer */
+.footer-column a {
+    color: #a9a9a9;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+    color: #FFFF00; /* Link berubah menjadi kuning saat disentuh */
+}
+
+/* Styling untuk ikon kontak */
+.footer-info i {
+    color: #FFFF00;
+    margin-right: 12px;
+    width: 20px; /* Memberi ruang agar teks rata */
+    text-align: center;
+}
+
+/* Menghilangkan bullet point dari daftar link navigasi */
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+/* Wrapper untuk peta agar tetap responsif */
+.map-wrapper {
+    position: relative;
+    overflow: hidden;
+    padding-top: 75%; /* Aspect ratio 4:3 */
+    border-radius: 8px;
+}
+
+.map-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: grayscale(100%); /* Membuat peta jadi abu-abu */
+    transition: filter 0.4s ease;
+}
+
+.map-wrapper:hover iframe {
+    filter: grayscale(0%); /* Peta menjadi berwarna saat disentuh */
+}
+
+
+/* Bagian bawah footer */
+.footer-bottom {
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    border-top: 1px solid #333; /* Garis pemisah */
+}
+
+.social-icons {
+    margin-bottom: 15px;
+}
+
+/* Styling untuk ikon media sosial */
+.social-icons a {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+    background-color: #333;
+    color: #fff;
+    margin: 0 8px;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.social-icons a:hover {
+    background-color: #FFFF00;
+    color: #1a1a1a;
+    transform: translateY(-3px); /* Efek sedikit terangkat */
+}
+
+.footer-bottom p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Responsif untuk layar mobile */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column; /* Kolom jadi tersusun ke bawah */
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-column h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+</style>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/meta', {seo: seo}) %>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Discover Bali's Underwater Paradise</h1>
+        <p>Certified PADI diving center offering unforgettable underwater experiences</p>
+        <div class="cta-buttons">
+          <a href="#dive-packages" class="btn-primary">Explore Tours</a>
+          <a href="#contact" class="btn-secondary">Contact Us</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+      <div class="container">
+        <div class="about-content">
+          <h2>Why Choose Bali Diving?</h2>
+          <p>With over 15 years of experience showing divers Bali's best underwater sites, our multilingual team of PADI professionals ensures your safety and enjoyment at all times.</p>
+          <ul class="features-list">
+            <li><i class="fas fa-check-circle"></i> Small groups (max 4 divers per guide)</li>
+            <li><i class="fas fa-check-circle"></i> Premium equipment included</li>
+            <li><i class="fas fa-check-circle"></i> Free underwater photography</li>
+            <li><i class="fas fa-check-circle"></i> Flexible cancellation policy</li>
+          </ul>
+        </div>
+        <div class="about-image">
+          <img src="/images/about-dive.jpg" alt="Bali Diving instructor with happy customers" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <!-- Dive Spots Section -->
+    <section id="dive-packages" class="dive-spots">
+      <h2>Our Signature Dive Sites</h2>
+      <div class="spots-grid">
+        <% diveSpots.forEach(spot => { %>
+          <div class="spot-card">
+            <div class="spot-image" style="background-image: url('/images/dive-spots/<%= spot.name.toLowerCase().replace(/\s+/g, '-') %>.jpg')"></div>
+            <div class="spot-info">
+              <h3><%= spot.name %></h3>
+              <p class="highlight"><%= spot.highlight %></p>
+              <div class="spot-details">
+                <span><i class="fas fa-ruler-vertical"></i> <%= spot.depth %></span>
+                <span><i class="fas fa-certificate"></i> <%= spot.level %></span>
+              </div>
+              <a href="#contact" class="btn-small">Book Now</a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+      <h2>What Our Divers Say</h2>
+      <div class="testimonial-slider">
+        <div class="testimonial">
+          <div class="rating">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <p>"The team at Bali Diving made my first scuba experience absolutely magical. Saw manta rays and the famous Liberty wreck - unforgettable!"</p>
+          <div class="author">- Sarah K., Australia</div>
+        </div>
+        <!-- More testimonials would go here -->
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container">
+        <h2>Ready for Your Underwater Adventure?</h2>
+        <p>Book your dive today or contact us for personalized recommendations</p>
+        <a href="#contact" class="btn-primary">Get Started</a>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

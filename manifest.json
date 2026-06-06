@@ -1,0 +1,30 @@
+{
+  "short_name": "Bali Diving",
+  "name": "Bali Diving",
+  "theme_color": "#4A90E2",
+  "background_color": "#F7F8F9",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/bd48x48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "/bd96x96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "/bd144x144.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "/bd192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/?utm_source=launcher"
+}

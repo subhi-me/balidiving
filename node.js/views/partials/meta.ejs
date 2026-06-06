@@ -1,0 +1,64 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= seo.title %></title>
+<meta name="description" content="<%= seo.description %>">
+<meta name="keywords" content="<%= seo.keywords %>">
+
+<!-- Canonical URL -->
+<link rel="canonical" href="<%= seo.canonical %>">
+
+<!-- Open Graph / Social Media -->
+<meta property="og:title" content="<%= seo.title %>">
+<meta property="og:description" content="<%= seo.description %>">
+<meta property="og:image" content="<%= seo.ogImage %>">
+<meta property="og:url" content="<%= seo.canonical %>">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= seo.title %>">
+<meta name="twitter:description" content="<%= seo.description %>">
+<meta name="twitter:image" content="<%= seo.ogImage %>">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="/images/favicon.png">
+
+<!-- Schema.org markup for Google -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DiveCenter",
+  "name": "Bali Diving",
+  "image": "<%= seo.ogImage %>",
+  "@id": "<%= seo.canonical %>",
+  "url": "<%= seo.canonical %>",
+  "telephone": "+62 361 1234567",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Jalan Raya Seminyak No. 123",
+    "addressLocality": "Seminyak",
+    "addressRegion": "Bali",
+    "postalCode": "80361",
+    "addressCountry": "ID"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "-8.68333",
+    "longitude": "115.16667"
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "opens": "07:00",
+    "closes": "19:00"
+  }
+}
+</script>

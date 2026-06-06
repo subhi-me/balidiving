@@ -1,0 +1,62 @@
+<%- include('../partials/header') %>
+
+    <main>
+        <section class="about">
+            <h2>Why Choose Bali Diving?</h2>
+            <div class="features">
+                <div class="feature">
+                    <img src="/images/safety.png" alt="Safety First">
+                    <h3>Safety First</h3>
+                    <p>All equipment regularly maintained and certified</p>
+                </div>
+                <div class="feature">
+                    <img src="/images/eco.png" alt="Eco Friendly">
+                    <h3>Eco Friendly</h3>
+                    <p>We follow sustainable diving practices</p>
+                </div>
+                <div class="feature">
+                    <img src="/images/guide.png" alt="Expert Guides">
+                    <h3>Expert Guides</h3>
+                    <p>PADI certified instructors with local knowledge</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="packages" class="packages">
+            <h2>Our Diving Packages</h2>
+            <div class="package-list">
+                <% packages.forEach(package => { %>
+                    <div class="package-card">
+                        <h3><%= package.name %></h3>
+                        <p class="price"><%= package.price %></p>
+                        <ul>
+                            <li>2-3 hour session</li>
+                            <li>All equipment included</li>
+                            <li>Photos included</li>
+                        </ul>
+                        <button class="btn">Book Now</button>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <h2>What Our Customers Say</h2>
+            <div class="testimonial-grid">
+                <% testimonials.forEach(testimonial => { %>
+                    <div class="testimonial">
+                        <p>"<%= testimonial.quote %>"</p>
+                        <p class="author">- <%= testimonial.name %></p>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>Ready for Your Underwater Adventure?</h2>
+            <p>Contact us today to book your diving experience</p>
+            <a href="#" class="btn">Get in Touch</a>
+        </section>
+    </main>
+
+<%- include('../partials/footer') %>

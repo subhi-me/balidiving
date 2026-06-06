@@ -1,0 +1,4 @@
+http://www.readybali.com/;database/img/partner/ready.jpg;Ready Bali;Find, book and enjoy activities nearby;www.readybali.com
+https://www.getyourguide.com/bali-l347/bali-beginner-diving-experience-in-tulamben-bay-t105424/?ranking_uuid=0a8c1cd6-5a16-4c1a-ae9b-98d6043d3c5e;database/img/partner/gyg2.svg;Get Your Guide;Things To Do, Attractions, and Tours;www.getyourguide.com
+https://travel.padi.com/dive-center/indonesia/bali-diving/;database/img/partner/padi1.svg;PADI;Dive Training Organization;www.padi.com
+https://balidiving.com/a/redir/google.php;database/img/partner/g.svg;Google;Search Engine Partner;www.google.com

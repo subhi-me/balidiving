@@ -1,0 +1,162 @@
+# =========================================================
+# 🌊 BALI DIVING - SEO, SECURITY & PERFORMANCE CONFIG (FIXED)
+# - HTTPS + NON-WWW canonical
+# - Clean URLs (.php/.html hidden)
+# - Safe front controller (won't hijack favicon/assets)
+# - DEV cache (4 hours) + proper favicon handling
+# =========================================================
+
+RewriteBase /
+
+# ---------------------------------------------------------
+# 0) HARD BYPASS: favicon & common assets (must serve as files)
+#    Prevent index.php router from catching them
+# ---------------------------------------------------------
+RewriteRule ^(favicon\.ico|favicon\.png|iconbd\.png|bd192x192\.png|bali-diving-favicon\.png|bali-diving-64\.png|bali-diving-128\.png|bali-diving-logo\.svg|site\.webmanifest|manifest\.json|apple-touch-icon.*\.png)$ - [L]
+
+# ---------------------------------------------------------
+# 1) CANONICAL: Force HTTPS & NON-WWW
+# ---------------------------------------------------------
+# Force HTTPS
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Force non-www
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+# ---------------------------------------------------------
+# 2) EXTENSIONLESS: /page -> /page.php (if .php exists) else .html
+# ---------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+?)/?$ $1.php [QSA,L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+?)/?$ $1.html [QSA,L]
+
+# ---------------------------------------------------------
+# 3) Redirect direct access .php/.html -> clean URL
+# ---------------------------------------------------------
+RewriteCond %{THE_REQUEST} \s/([^.]+)\.(php|html)\s [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# ---------------------------------------------------------
+# 4) FRONT CONTROLLER (optional router)
+#    Only when physical file/dir does NOT exist
+#    + extra bypass for assets to be extra safe
+# ---------------------------------------------------------
+RewriteCond %{REQUEST_URI} \.(?:css|js|mjs|map|json|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|otf|eot|pdf|xml|txt)$ [NC]
+RewriteRule ^ - [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/404\.php$ [NC]
+RewriteRule ^ index.php [L]
+
+# ---------------------------------------------------------
+# 5) CACHING POLICY - DEV (4 HOURS)
+# ---------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # HTML/PHP: fast expire (dev)
+  ExpiresByType text/html "access plus 5 minutes"
+  ExpiresByType application/xhtml+xml "access plus 5 minutes"
+
+  # CSS/JS/JSON: 4 hours
+  ExpiresByType text/css "access plus 4 hours"
+  ExpiresByType text/javascript "access plus 4 hours"
+  ExpiresByType application/javascript "access plus 4 hours"
+  ExpiresByType application/json "access plus 4 hours"
+
+  # Images & Icons: 4 hours
+  ExpiresByType image/avif "access plus 4 hours"
+  ExpiresByType image/webp "access plus 4 hours"
+  ExpiresByType image/jpeg "access plus 4 hours"
+  ExpiresByType image/jpg  "access plus 4 hours"
+  ExpiresByType image/png  "access plus 4 hours"
+  ExpiresByType image/gif  "access plus 4 hours"
+  ExpiresByType image/svg+xml "access plus 4 hours"
+  ExpiresByType image/x-icon "access plus 4 hours"
+  ExpiresByType image/vnd.microsoft.icon "access plus 4 hours"
+
+  # Fonts: 4 hours
+  ExpiresByType font/ttf  "access plus 4 hours"
+  ExpiresByType font/otf  "access plus 4 hours"
+  ExpiresByType font/woff "access plus 4 hours"
+  ExpiresByType font/woff2 "access plus 4 hours"
+  ExpiresByType application/font-woff "access plus 4 hours"
+
+  ExpiresByType application/pdf "access plus 4 hours"
+  ExpiresDefault "access plus 4 hours"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # HTML/PHP: no-store (dev)
+  <FilesMatch "\.(php|html?)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=300"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+
+  # CSS/JS/JSON
+  <FilesMatch "\.(css|js|mjs|map|json)$">
+    Header set Cache-Control "public, max-age=14400, must-revalidate"
+  </FilesMatch>
+
+  # Images/Icons/Fonts
+  <FilesMatch "\.(avif|webp|gif|png|ico|jpe?g|svg|woff2?|ttf|otf|eot)$">
+    Header set Cache-Control "public, max-age=14400, must-revalidate"
+  </FilesMatch>
+
+  # Connection hint
+  Header set Connection keep-alive
+</IfModule>
+
+# 5b) Disable ETag to align with Cache-Control
+FileETag None
+<IfModule mod_headers.c>
+  Header unset ETag
+</IfModule>
+
+# ---------------------------------------------------------
+# 6) CUSTOM ERROR PAGES
+# ---------------------------------------------------------
+ErrorDocument 404 /404.php
+ErrorDocument 500 /404.php
+
+# ---------------------------------------------------------
+# 7) SECURITY & ACCESS CONTROL
+# ---------------------------------------------------------
+<Files 403.shtml>
+  Require all granted
+</Files>
+
+# Block specific IP (Apache 2.4+)
+<RequireAll>
+  Require all granted
+  Require not ip 36.86.63.182
+</RequireAll>
+
+# CORS for fonts
+<IfModule mod_headers.c>
+  <FilesMatch "\.(eot|otf|ttf|woff|woff2)$">
+    Header always set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>
+
+# ---------------------------------------------------------
+# 8) MIME TYPES (icons + modern images)
+# ---------------------------------------------------------
+AddType image/avif .avif
+AddType image/webp .webp
+AddType image/svg+xml .svg
+AddType image/x-icon .ico
+AddType image/vnd.microsoft.icon .ico
+
+# =========================================================
+nd.microsoft.icon .ico
+
+# =========================================================

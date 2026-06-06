@@ -1,0 +1,89 @@
+<?php
+// snorkeling.php
+// expects: $snorkelingProducts (array), $productImages (id => url)
+// expects: $USD_TO_IDR (float) from main-cart.php
+
+if (empty($snorkelingProducts)) {
+    return;
+}
+
+if (!function_exists('fmt_idr')) {
+    function fmt_idr(int $n): string {
+        return 'Rp ' . number_format($n, 0, ',', '.');
+    }
+}
+if (!function_exists('fmt_usd')) {
+    function fmt_usd(float $n): string {
+        $s = number_format($n, 2, '.', '');
+        $s = rtrim(rtrim($s, '0'), '.');
+        return 'US$' . $s;
+    }
+}
+?>
+<section class="category-section">
+  <h3 class="category-title">Snorkeling</h3>
+  <p class="category-intro">
+    Go on one of our unforgettable snorkeling trips and explore Bali’s signature underwater highlights:
+    colourful coral bommies, clear white-sand bottoms, and even the famous World War II shipwreck.
+    You can also meet the magical manta rays around Nusa Penida.
+    Snorkeling is suitable for almost everyone, including beginners and those who are not confident swimmers,
+    as you will be guided and supported the whole time.
+  </p>
+
+  <div class="category-products">
+    <?php foreach ($snorkelingProducts as $p):
+      $pid = (int)$p['id'];
+      $img = $productImages[$pid] ?? 'https://balidiving.com/images/thumbnails/10-bali-diving-underwater.jpg';
+
+      $priceUsd = (float)$p['price_usd'];
+      $rate = (isset($USD_TO_IDR) && is_numeric($USD_TO_IDR) && (float)$USD_TO_IDR > 0) ? (float)$USD_TO_IDR : 0;
+      $priceIdr = $rate > 0 ? (int)round($priceUsd * $rate) : 0;
+
+      $isEnquiry = (int)$p['is_enquiry'] === 1;
+    ?>
+      <div class="product-card">
+        <div class="product-icon">
+          <img src="<?= htmlspecialchars($img) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
+        </div>
+
+        <div class="product-name"><?= htmlspecialchars($p['name']) ?></div>
+
+        <?php if ($isEnquiry): ?>
+          <div class="product-price">Contact for pricing</div>
+        <?php else: ?>
+          <div class="product-price"
+               data-usd="<?= htmlspecialchars((string)$priceUsd) ?>"
+               data-idr="<?= htmlspecialchars((string)$priceIdr) ?>">
+
+            <div class="text-lg font-semibold text-blue-600 leading-tight">
+              <?= $priceIdr > 0 ? fmt_idr($priceIdr) : 'Rp -' ?>
+            </div>
+
+            <!-- FIX: force kecil walau ada CSS yang override -->
+            <div class="text-blue-500 leading-tight"
+                 style="font-size:11px !important; opacity:.8; margin-top:2px !important;">
+              Estimation <?= fmt_usd($priceUsd) ?>
+            </div>
+
+          </div>
+        <?php endif; ?>
+
+        <div class="product-description">
+          <?= htmlspecialchars($p['description']) ?>
+        </div>
+
+        <a href="#" class="read-article-link" onclick="event.preventDefault()">📖 Read Article</a>
+
+        <?php if ($isEnquiry): ?>
+          <a href="https://balidiving.com/contact?page=contact"
+             target="_blank" rel="noopener noreferrer"
+             class="enquire-btn">
+            Enquire
+          </a>
+        <?php else: ?>
+          <button class="add-to-cart-btn" onclick="addToCart(<?= $pid ?>)">Add to Cart</button>
+        <?php endif; ?>
+      </div>
+    <?php endforeach; ?>
+  </div>
+</section>
